@@ -1,3 +1,3 @@
-# Webpage-za-usluge-masa-a-i-kozmeti-kih-proizvoda
+# Webpage-za-usluge-masaza-i-kozmetickih-proizvoda
 Projekt za kolegij Programsko inžinjerstvo
 Work in progress 
