@@ -2,8 +2,12 @@
 import { ref } from 'vue'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '@/firebase.js'
+import { useRouter } from 'vue-router'
+
 const email = ref('')
 const password = ref('')
+const router = useRouter()
+
 const response = ref({ error: false, message: '' })
 const login = async () => {
  try {
@@ -13,18 +17,15 @@ password.value);
  response.value.message = 'Korisnik prijavljen: ' +
 JSON.stringify(userCredential.user);
 
-await router.replace({ name: 'korisnik' })
+await router.replace({ name: 'korisnik', params: { email: email.value } })
 return
-
  } catch (error) {
  response.value.error = true;
  response.value.message = 'Greška pri prijavi: ' + error.message;
  }
 };
-
 const stilInputa=ref('border-blue-600 border-2 rounded-lg bg-blue-200 mb-3 p-1 flex flex-col items-center');
 const stilForme=ref('inline-block border-blue-600 bg-white border-4 rounded-lg mt-2 p-2');
-
 </script>
 
 <template>
