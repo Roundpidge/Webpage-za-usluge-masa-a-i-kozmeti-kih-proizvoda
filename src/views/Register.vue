@@ -18,7 +18,7 @@ password.value);
  response.value.message = 'Korisnik registriran: ' +
 JSON.stringify(userCredential.user);
 
-await router.replace({ name: 'korisnik' })
+await router.replace({ name: 'korisnik', params: {email: email.value} })
 return
 
  } catch (error) {
