@@ -4,8 +4,7 @@ import { auth } from '@/firebase.js'
 
 import Home from '@/views/Home.vue'
 import About from '@/views/About.vue'
-import reg from '@/views/Register.vue'
-import log from '@/views/login.vue'
+import regLog from '@/views/RegisterAndLogin.vue'
 import products from '@/views/products.vue'
 import tretmani from '@/views/tretmani.vue'
 import korisnik from '@/views/prijavljenKorisnik.vue'
@@ -15,8 +14,7 @@ import NotFound from '@/views/NotFound.vue'
 const routes = [
     { path: '/', component: Home },
     { path: '/about', component: About },
-    { path: '/register', component: reg },
-    { path: '/login', component: log },
+    { path: '/registerLogin', component: regLog },
     { path: '/logout', component: logout },
     { path: '/products', component: products },
     { path: '/tretmani', component: tretmani },
