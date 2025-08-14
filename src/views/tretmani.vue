@@ -14,9 +14,11 @@ const store = usetretmaniStore();
       {{ tretman.naziv }} <span class="border-r"></span>{{ tretman.cijena }}
     </div>
   </RouterLink>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSf-PfQg1hO64jKMxPXrskUyo7oXCnRf7qcJtwkA3mNhj7A2Sw/viewform?usp=header" class="border-orange-400 border-3 rounded-lg bg-orange-200 mb-3 p-2">Naruci se</a>
 </div>
   <h1 class="text-gray-200">Propustili ste popuste na tretmane i proizvode? Registracijom ili prijavom svojeg računa možete omogućiti primanje ranih obavijesti o nadolazećim popustima i novostima kako biste bili u toku do danas</h1>
 
 </template>
 
 <style scoped></style>
+
