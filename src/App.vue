@@ -25,13 +25,14 @@ onAuthStateChanged(auth, (currentUser) => {
 
         <div class="absolute inset-0 bg-white/65 "></div>
     <nav class="relative flex gap-4 p-4 bg-[#e0fad9]">
- <span v-if="!user" class="text-[#9a655a] text-sm"> Nema prijavljenog korisnika! </span>
+ <span v-if="!user" class="text-rose-600 text-sm"> Nema prijavljenog korisnika! </span>
  <span v-else class="text-emerald-600 text-sm"> Prijavljen korisnik: <b>{{ user.email }}</b></span>
       <RouterLink to="/"><gumb>Početna</gumb></RouterLink>
       <RouterLink to="/about"><gumb>O nama</gumb></RouterLink>
       <RouterLink to="/products"><gumb>Proizvodi</gumb></RouterLink>
       <RouterLink to="/tretmani"><gumb>Tretmani</gumb></RouterLink>
       <RouterLink to="/registerLogin"><gumb>Registracija i prijava</gumb></RouterLink>
+      <RouterLink v-if="user" :to="{ name: 'korisnik', params: {email: user.email} }"><gumb>Korisnicni racun</gumb></RouterLink>
     </nav>
 
     <main class="relative flex-grow">
