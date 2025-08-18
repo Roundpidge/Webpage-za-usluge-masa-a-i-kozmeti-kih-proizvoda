@@ -10,6 +10,7 @@ import tretmani from '@/views/tretmani.vue'
 import korisnik from '@/views/prijavljenKorisnik.vue'
 import logout from '@/views/logout.vue'
 import NotFound from '@/views/NotFound.vue'
+import admin from '@/views/ADMINlogin.vue'
 
 const routes = [
     { path: '/', component: Home },
@@ -18,6 +19,7 @@ const routes = [
     { path: '/logout', component: logout },
     { path: '/products', component: products },
     { path: '/tretmani', component: tretmani },
+    { path: '/admin', component: admin },
 
     {
         path: '/proizvodDetaljno/:id',
