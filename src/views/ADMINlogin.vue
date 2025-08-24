@@ -1,26 +1,34 @@
 <script setup>
 import { ref } from 'vue'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { auth} from '@/firebase.js'
-import {  useRouter } from "vue-router";
+import { useRouter} from "vue-router";
+import { useUserStore } from '@/stores/projektStore.js';
 
 const email=ref('');
 const password=ref('');
 const router=useRouter();
+const user = useUserStore();
+
 // ADMIN LOGIN
 const response = ref({ error: false, message: '' })
 const ADMINlogin = async () => {
- try {
- const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
- response.value.error = false;
- response.value.message = 'Korisnik prijavljen: ';
 
-await router.replace({ name: 'korisnik', params: { email: email.value } })
+ try {
+    await signInWithEmailAndPassword(auth, email.value, password.value);
+
+ const uloga = await user.nadiUlogu();
+    if(uloga!="admin"){
+    response.value={error: true, message:"Niste admin, prijava neuspjesna! " }
+    await signOut(auth)
+    return
+}
+response.value={error: false, message:"Dobrodosli! Prijava je uspjesna! " }
+await router.replace({ name: 'adminPage', params: { email: email.value } })
 return
 
  } catch (error) {
- response.value.error = true;
- response.value.message = 'Greška pri prijavi: ' + error.message;
+    response.value={error: true, message:"Greska pri prijavi! "}
  }
 };
 
@@ -30,7 +38,7 @@ const stilForme=ref('inline-block border-blue-600 bg-white border-4 rounded-lg m
 <template>
 
      <!--ADMIN PRIJAVA-->
- <form :class="[stilForme]" @submit.prevent="ADMINlogin">
+ <form :class="[stilForme]" @submit.prevent="ADMINlogin" >
   <h1><strong>Admin prijava</strong></h1>
  <hr></hr>
  <Label>Email:</Label><input :class="[stilInputa]" v-model="email" type="email" placeholder="naziv@gmail.com">
@@ -40,6 +48,7 @@ const stilForme=ref('inline-block border-blue-600 bg-white border-4 rounded-lg m
  <span :class="response.error ? 'text-rose-600' : 'text-emerald-600'">{{
 response.message }}</span>
  </form>
+ 
 </template>
 
 <style scoped>
