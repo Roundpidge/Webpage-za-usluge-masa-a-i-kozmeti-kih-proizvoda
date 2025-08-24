@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { auth } from '@/firebase.js'
 
-
 import Home from '@/views/Home.vue'
 import About from '@/views/About.vue'
 import regLog from '@/views/RegisterAndLogin.vue'
@@ -11,6 +10,7 @@ import korisnik from '@/views/prijavljenKorisnik.vue'
 import logout from '@/views/logout.vue'
 import NotFound from '@/views/NotFound.vue'
 import admin from '@/views/ADMINlogin.vue'
+import adminPage from '@/views/ADMINMain.vue'
 
 const routes = [
     { path: '/', component: Home },
@@ -40,6 +40,12 @@ const routes = [
         path: '/korisnik/:email',
         name: 'korisnik',
         component: korisnik
+    },
+
+    {
+        path: '/adminPage/:email',
+        name: 'adminPage',
+        component: adminPage
     },
 
     {
