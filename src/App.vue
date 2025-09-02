@@ -1,61 +1,58 @@
 <script setup>
-import {ref} from 'vue'
-import { RouterLink, RouterView, useRouter } from 'vue-router'
+import {ref, computed} from 'vue'
+import { RouterLink, RouterView } from 'vue-router'
 import gumb from './components/gumb.vue'
-import backgroundImg from '@/assets/Backround.jpg' 
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, reload } from 'firebase/auth';
 import { auth } from '@/firebase.js'
 import { useUserStore } from './stores/projektStore.js';
 
-const router = useRouter()
 const isAdmin=ref(false);
 const user = ref(null);
 
-onAuthStateChanged(auth, (currentUser) => {
- if (currentUser) {
- user.value = currentUser;
+const storeUser=useUserStore();
 
- } else {
- user.value = null;
- }
-});
+onAuthStateChanged(auth, async (currentUser) => {
+  user.value = currentUser
 
-const {uloga}=useUserStore();
+  if (currentUser) {
+    try { await reload(currentUser) } catch {}
+    
+    try{ 
+    const role = await storeUser.nadiUlogu()
+    isAdmin.value = role === 'admin'
+  }catch{isAdmin.value=false}
+  } else {
+    isAdmin.value = false
+  }
+})
 
-const checkRole = async()=> {
-   const uloga = await nadiUlogu(); 
-   if(uloga.value==="admin"){
-    return isAdmin.value=true;
-   }
-   else{
-    return isAdmin.value=false
-   }
-}
+const verified = computed(() => user.value?.emailVerified === true)
 </script>
 
-<template>
-  
-  <div class="min-h-screen flex flex-col bg-cover bg-center" :style="{ backgroundImage: `url(${backgroundImg})` }">
+<template>    
+ <nav class="relative flex gap-4 p-4 bg-[#e0fad9]">
+    <span v-if="!user" class="text-rose-600 text-sm">
+      Nema prijavljenog korisnika!
+    </span>
+    <span v-else class="text-emerald-600 text-sm">
+      Prijavljen korisnik: <b>{{ user.email }}</b>
+    </span>
 
-        <div class="absolute inset-0 bg-white/65 "></div>
-    <nav class="relative flex gap-4 p-4 bg-[#e0fad9]">
- <span v-if="!user" class="text-rose-600 text-sm"> Nema prijavljenog korisnika! </span>
- <span v-else class="text-emerald-600 text-sm"> Prijavljen korisnik: <b>{{ user.email }}</b></span>
-      <RouterLink to="/"><gumb>Početna</gumb></RouterLink>
-      <RouterLink to="/about"><gumb>O nama</gumb></RouterLink>
-      <RouterLink to="/products"><gumb>Proizvodi</gumb></RouterLink>
-      <RouterLink to="/tretmani"><gumb>Tretmani</gumb></RouterLink>
-      <RouterLink to="/registerLogin"><gumb>Registracija i prijava</gumb></RouterLink>
-      <RouterLink v-if="user && !checkRole" :to="{ name: 'korisnik', params: {email: user.email} }"><gumb>Korisnicni racun</gumb></RouterLink>
-      <RouterLink v-if="user && checkRole" :to="{ name: 'adminPage', params: {email: user.email} }"><gumb>Admin racun</gumb></RouterLink>
-    </nav>
+    <span v-if="user && verified" class="text-green-600"> verificiran</span>
+    <span v-else-if="user && !verified" class="text-red-600"> nije verificiran</span>
 
-    <main class="relative flex-grow">
-      <RouterView />
-    </main>
-
-    <footer class="relative bg-[#c2e9b7]  text-center p-4 mt-8">
-      © 2025 No Stress Kozmetički Salon
-    </footer>
-  </div>
+    <RouterLink to="/"><gumb>Početna</gumb></RouterLink>
+    <RouterLink to="/about"><gumb>O nama</gumb></RouterLink>
+    <RouterLink to="/products"><gumb>Proizvodi</gumb></RouterLink>
+    <RouterLink to="/tretmani"><gumb>Tretmani</gumb></RouterLink>
+    <RouterLink to="/registerLogin"><gumb>Registracija i prijava</gumb></RouterLink>
+    <RouterLink v-if="user && !isAdmin" :to="{ name: 'korisnik', params: { email: user.email } }" ><gumb>Korisnički račun</gumb></RouterLink>
+    <RouterLink v-if="user && isAdmin" :to="{ name: 'adminPage', params: { email: user.email } }"><gumb>Admin račun</gumb></RouterLink>
+  </nav>
+  <main class="relative flex-grow">
+    <RouterView />
+  </main>
+  <footer class="relative bg-[#c2e9b7] text-center p-4 mt-8">
+    © 2025 No Stress Kozmetički Salon
+  </footer>
 </template>
