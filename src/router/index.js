@@ -16,6 +16,7 @@ const routes = [
     { path: '/', component: Home },
     { path: '/about', component: About },
     { path: '/registerLogin', component: regLog },
+    { path: '/registerLogin', name: 'login', component: regLog },
     { path: '/logout', component: logout },
     { path: '/products', component: products },
     { path: '/tretmani', component: tretmani },
@@ -62,10 +63,10 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
-    const isAuthenticated = !!auth.currentUser
-    if (!isAuthenticated && to.name === 'korisnik') {
-        return { name: 'log' }
-    }
+  const isAuthenticated = !!auth.currentUser
+  if (!isAuthenticated && to.name === 'korisnik') {
+    return { name: 'login' }
+  }
 })
 
 export default router
