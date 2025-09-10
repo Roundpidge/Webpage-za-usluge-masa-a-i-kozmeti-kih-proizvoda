@@ -1,4 +1,3 @@
-
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import { ref, computed } from 'vue'
@@ -6,6 +5,11 @@ import { useProductsStore, useKosaricaStore, useUserStore } from "@/stores/proje
 import {onAuthStateChanged} from 'firebase/auth'
 import { auth } from '@/firebase.js'
 import Swal from 'sweetalert2'
+import placeholder from '@/assets/placeholder.jpeg' 
+import naslov from '@/components/naslov.vue'
+import tekst from '@/components/tekst.vue'
+import gumb2 from '@/components/gumbVanNavbar.vue'
+
 const store = useProductsStore()
 const userStore=useUserStore()
 const cart=useKosaricaStore()
@@ -65,14 +69,29 @@ onAuthStateChanged(auth, (currentUser) => {
 
 <template>
   <div v-if="proizvod">
-    <h1 class="text-3xl">{{ proizvod.naziv }}</h1>
+    <div class="text-center px-6">
+    <naslov class="text-2xl">{{ proizvod.naziv }}</naslov>
+    <tekst>
+    <img :src="proizvod.slika || placeholder" alt="slika" class="max-h-20 inline-block ml-2" />
     <ol>
-        <li>Količina: {{ proizvod.kolicina }}</li>
-        <li>Cijena: {{ proizvod.cijena }}</li>
+        <li class="m-2">Količina: {{ proizvod.kolicina }}</li>
+        <li class="m-2">Cijena: {{ proizvod.cijena }}</li>
     </ol>
+    </tekst>
     
-    <div v-if="user"><button @click="smanjiKol()">-</button>{{ kol }}<button @click="povecajKol()">+</button>
-    <button @click=" dodajuKosaricu()">Dodaj u košaricu</button>
+<div v-if="user" class="flex flex-col items-center">
+  <div class="bg-[#affa94] w-fit rounded-xl px-4 py-3 flex flex-col items-center mb-10">
+    <div class="inline-flex items-center gap-4 text-xl">
+      <button @click="smanjiKol()" class="w-8 h-8 flex items-center justify-center hover:text-[#1b7511] text-3xl mb-4">-</button>
+      <span class="min-w-6 text-center mb-4">{{ kol }}</span>
+      <button @click="povecajKol()" class="w-8 h-8 flex items-center justify-center  hover:text-[#1b7511] text-3xl mb-4">+</button>
+    </div>
+      <gumb2 @click="dodajuKosaricu()">Dodaj u košaricu</gumb2>
+ 
+  </div>
+</div>
+<div v-else>Prijavljeni korisnici mogu dodati proizvod u  košaricu, za registraciju ili prijavu odite do "Registracija i prijava" i automatski nakon registracije ili prijave će vas prebaciti na korisnički račun</div>
+
     </div>
   </div>
   <div v-else>
