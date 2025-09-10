@@ -1,12 +1,20 @@
 <script setup>
-import zaglavlje from '../components/header.vue';
+import naslov from '@/components/naslov.vue'
+import tekst from '@/components/tekst.vue'
 </script>
-
 <template>
-    <zaglavlje></zaglavlje>
-  <h1 class="text-blue-600 text-5xl">Dobrodošli!</h1>
-  <img src="../assets/placeholder.jpeg" class="h-100">
-  <h1 >Propustili ste popuste na tretmane i proizvode? Registracijom ili prijavom svojeg računa možete omogućiti primanje ranih obavijesti o nadolazećim popustima i novostima kako biste bili u toku do danas</h1>
+    <naslov>Dobrodošli!</naslov>
+  <img src="@/assets/Tranquility-Spa-Rocks.jpg" class="max-h-70 hero-img p-4">
+  <tekst>Nudimo razne kozmetičke proizvode kao i bezgotovinsku kupnju.<br></br> Uz proizvode nudimo i usluge masaža prilagođene za sve potrebe.<br></br>Dodatne informacija za salon se nalaze pod <strong>"O nama"</strong></tekst><br>
+  <span class="text-[#7a472f] text-xl">! Ako se želite naručiti na neki određeni tretman ili želite kupiti proizvod, nastavite do <strong>"Registracija i prijava" !</strong></span>
+
 </template>
 
-<style scoped></style>
+<style scoped>
+.hero-img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+}
+</style>
