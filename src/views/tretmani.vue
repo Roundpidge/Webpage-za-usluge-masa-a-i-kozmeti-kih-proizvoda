@@ -1,19 +1,37 @@
 <script setup>
 import { RouterLink} from 'vue-router'
 import { useTretmaniStore } from "@/stores/projektStore.js"
+import naslov from '@/components/naslov.vue'
+import tekst from '@/components/tekst.vue'
 const storeT = useTretmaniStore();
 
 </script>
 <template>
-  <div class="border-r border-blue-400">
-    <RouterLink v-for="tretman in storeT.tretmani" :key="tretman?.id" :to="`/tretmanDetaljno/${tretman.id}`">
-    <div class=" w-fit flex justify-center m-2 rounded hover:text-orange-400">
-      {{ tretman.naziv }} <span class="border-r"></span>{{ tretman.cijena }}
-    </div>
-  </RouterLink>
-</div>
-  <h1 class="text-gray-200">Propustili ste popuste na tretmane i proizvode? Registracijom ili prijavom svojeg računa možete omogućiti primanje ranih obavijesti o nadolazećim popustima i novostima kako biste bili u toku do danas</h1>
-
+  <naslov>Tretmani u ponudi</naslov>
+ <div class="flex justify-center my-6">
+    <table>
+      <tbody>
+        <tr v-for="tretman in storeT.tretmani" :key="tretman?.id">
+          <td class="p-3 text-center">
+            <tekst>
+              <RouterLink
+                :to="`/tretmanDetaljno/${tretman.id}`"
+                class="hover:text-[#24b550] font-medium">
+                {{ tretman.naziv }}
+              </RouterLink>
+              <div class="text-sm text-gray-700">
+                {{ tretman.cijena }} €
+              </div>
+            </tekst>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
+
+
+
+ 
 
 <style scoped></style>
