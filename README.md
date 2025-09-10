@@ -36,10 +36,10 @@ Početni README mora sadržavati:
 - Mentor: doc. dr. sc. Nikola Tanković: ntankovic.unipu.hr
 
 funkcionalnosti:
--Digitalni "salon" koji nudi korisnicima pregled ponude proizvoda i tretmana i dodatnih informacija vezano za pojedini proizvod ili tretman,
+- Digitalni "salon" koji nudi korisnicima pregled ponude proizvoda i tretmana i dodatnih informacija vezano za pojedini proizvod ili tretman,
  *1)kupnja proizvoda i *rezervacija termina za tretmane, te *3)osnovne funkcije vezane za korisnički račun
 
--Dodatna objašnjenja:
+- Dodatna objašnjenja:
 *1)dodavanje željenog proizvoda i količine u košaricu i pregled proizvoda u košarici
 *2)To se izvodi preko google obrasca i šalje se administratoru na gmail
 *3)Mijenjanje lozinke, brisanje korisničkog računa, slanje email potvrde i odjava 
