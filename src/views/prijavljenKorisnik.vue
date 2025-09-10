@@ -1,107 +1,155 @@
 <script setup>
 import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router';
-import { sendEmailVerification, updatePassword, deleteUser, signOut} from 'firebase/auth';
-import { useProductsStore, useKosaricaStore, useUserStore } from "@/stores/projektStore.js"
+import { useRoute, useRouter } from 'vue-router'
+import { sendEmailVerification, updatePassword, deleteUser, signOut } from 'firebase/auth'
+import { useProductsStore, useKosaricaStore, useUserStore } from '@/stores/projektStore.js'
 import { auth } from '@/firebase.js'
 import Swal from 'sweetalert2'
+import naslov from '@/components/naslov.vue'
+import tekst from '@/components/tekst.vue'
+import gumb2 from '@/components/gumbVanNavbar.vue'
+import placeholder from '@/assets/placeholder.jpeg'
 
-const stilInputa=ref('border-blue-600 border-2 rounded-lg bg-blue-200 mb-3 p-1 flex flex-col items-center');
-const stilForme=ref('inline-block border-blue-600 bg-white border-4 rounded-lg mt-2 p-2');
-const route = useRoute();
-const router=useRouter();
-const novaLozinka = ref('');
-const open=ref(false);
+const route = useRoute()
+const router = useRouter()
 
+const stilInputa = ref('bg-[#affa94] text-[#1b7511] rounded-sm mb-3 p-2 max-w-md')
+const stilForme  = ref('flex flex-col items-start text-[#1b7511] mt-2 p-2')
 
-const store=useProductsStore(); 
-const cart=useKosaricaStore();
-const userStore=useUserStore();
+const novaLozinka = ref('')
+const open = ref(false)
 
-const promijeniLozinku = async () => {
- await updatePassword(auth.currentUser, novaLozinka.value);
- open.value=false
-};
+const store = useProductsStore()
+const cart = useKosaricaStore()
+const userStore = useUserStore()
 
-const sendVerification = async () => {
- await sendEmailVerification(auth.currentUser);
-};
+const profilnaSlika = ref(placeholder)
 
-function otvoriObrazacZaPromjenu(){
-return open.value=true;
+function promijeniSliku(e) {
+  const file = e.target.files?.[0]
+  if (!file || !file.type.startsWith('image/')) return
+  const fr = new FileReader()
+  fr.onload = () => { profilnaSlika.value = String(fr.result) }
+  fr.readAsDataURL(file)
 }
 
-const logout = () => {
- signOut(auth);
-};
+const promijeniLozinku = async () => {
+  await updatePassword(auth.currentUser, novaLozinka.value)
+  open.value = false
+}
+
+const sendVerification = async () => {
+  await sendEmailVerification(auth.currentUser)
+}
+
+function otvoriObrazacZaPromjenu() {
+  open.value = true
+}
+
+const logout = async () => {
+  try {
+    await signOut(auth)
+    router.replace('/logout')  
+  } catch (e) {
+    console.error('Greška pri odjavi:', e)
+  }
+}
 
 const obrisiKorisnika = async () => {
-  const user = auth.currentUser;
-  if (!user) return;
+  const user = auth.currentUser
+  if (!user) return
 
   const result = await Swal.fire({
-    title: "Jesi li sigurna?",
-    text: "Ova radnja je nepovratna!",
-    icon: "warning",
+    title: 'Jesi li sigurna?',
+    text: 'Ova radnja je nepovratna!',
+    icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Da, obriši račun!",
-    cancelButtonText: "Odustani"
-  });
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Da, obriši račun!',
+    cancelButtonText: 'Odustani'
+  })
+  if (!result.isConfirmed) return
 
-  if (!result.isConfirmed) return; 
+try {
+  await userStore.obrisiKorisnikaIzBaze?.()
+  await deleteUser(user)
 
-  try {
-    await storeUser.obrisiKorisnikaIzBaze();
-    await deleteUser(user); 
-    cart.isprazniKosaricu?.();
-    storeUser.reset?.();
+  cart.isprazniKosaricu?.()
+  userStore.reset?.()
+
+  await Swal.fire({
+    title: 'Obrisano!',
+    text: 'Tvoj račun i podaci su uspješno obrisani.',
+    icon: 'success'
+  })
+
+  router.replace('/logout')  
+} catch (e) {
+  if (e?.code === 'auth/requires-recent-login') {
     await Swal.fire({
-      title: "Obrisano!",
-      text: "Tvoj račun i podaci su uspješno obrisani.",
-      icon: "success"
-    });
-    router.replace('/');
-  } catch (e) {
-    if (e?.code === 'auth/requires-recent-login') {
-      await Swal.fire({
-        title: "Ponovna prijava potrebna",
-        text: "Zbog sigurnosti se moraš ponovno prijaviti prije brisanja računa.",
-        icon: "info"
-      });
-      router.push({ name: 'login', query: { redirect: 'delete-account' } });
-      return;
-    }
-    console.error(e);
-    await Swal.fire({
-      title: "Greška",
-      text: "Nešto je pošlo krivo pri brisanju računa. Pokušaj ponovno kasnije.",
-      icon: "error"
-    });
+      title: 'Ponovna prijava potrebna',
+      text: 'Zbog sigurnosti se moraš ponovno prijaviti prije brisanja računa.',
+      icon: 'info'
+    })
+    router.push({ name: 'login', query: { redirect: 'delete-account' } })
+    return
   }
-};
+  console.error(e)
+  await Swal.fire({
+    title: 'Greška',
+    text: 'Nešto je pošlo krivo pri brisanju računa. Pokušaj ponovno kasnije.',
+    icon: 'error'
+  })
+}
+
+}
+
 </script>
 
 <template>
-    
-    <h1>Korisnik: {{ route.params.email }}</h1>
-    <img src="@/assets/placeholder.jpeg"></img>
-    <hr></hr>
-    <ol class="border-4">Košarica:<li v-for=" kosara in cart.kosarica">{{ kosara.naziv }} | {{ kosara.kolicina }} | {{ kosara.ukupnaCijena }} €</li></ol> 
-    <button @click="cart.isprazniKosaricu()"class="bg-red-600">Isprazni košaricu</button>
- <button @click.prevent="sendVerification" class="bg-orange-600">Pošalji email potvrdu</button>
+  <naslov>Korisnički račun</naslov>
+  <tekst>
+    <p>Email: {{ route.params.email }}</p>
 
- <button @click="otvoriObrazacZaPromjenu">Promjena lozinke</button>
-    <div v-if="open">
- <form @submit.prevent="promijeniLozinku">
- Nova lozinka:<input v-model="novaLozinka" type="password" placeholder="Nova lozinka">
- <button type="submit">Promijeni lozinku</button>
- </form>
+    <!-- profilna slika -->
+<div class="flex flex-col items-center mt-4">
+  <img :src="placeholder" alt="Profilna slika" class="h-28 w-28 rounded-full border-4 border-[#affa94] mb-3" />
+</div>
+
+    <!-- košarica -->
+    <div class="flex justify-center mt-6">
+      <ol class="border-4 border-[#affa94] rounded-xl p-4 text-center w-fit">
+        <h2 class="text-xl font-semibold mb-2">Košarica:</h2>
+        <li v-for="kosara in cart.kosarica" :key="kosara.naziv">
+           {{ kosara.naziv }} <span class="ml-3"></span> x{{ kosara.kolicina }} <span class="ml-3"></span>  {{ kosara.ukupnaCijena }} €
+        </li>
+      </ol>
     </div>
-    <button @click.prevent="logout">Odjavi se</button>
-    <button @click.prevent="obrisiKorisnika">Obriši korisnički račun</button>
-</template>
 
-<style scoped>
-</style>
+    <div class="flex justify-center gap-4 mt-6">
+      <gumb2 @click="cart.isprazniKosaricu()">Isprazni košaricu</gumb2>
+      <gumb2 @click.prevent="sendVerification">Pošalji email potvrdu</gumb2>
+      <gumb2 @click="otvoriObrazacZaPromjenu">Promjena lozinke</gumb2>
+      <gumb2 @click.prevent="logout">Odjavi se</gumb2>
+      <gumb2 @click.prevent="obrisiKorisnika">Obriši korisnički račun</gumb2>
+    </div>
+
+    <!-- promjena lozinke -->
+<div v-if="open" class="flex justify-center mt-4">
+  <form :class="stilForme" @submit.prevent="promijeniLozinku">
+    <div v-if="providerId === 'password'">
+      Trenutna lozinka:
+      <input :class="stilInputa" v-model="trenutnaLozinka" type="password" placeholder="Trenutna lozinka" />
+    </div>
+
+    Nova lozinka:
+    <input :class="stilInputa" v-model="novaLozinka" type="password" placeholder="Nova lozinka" />
+
+    <div class="flex gap-4 mt-2"> <gumb2 type="submit">Promijeni lozinku</gumb2> <gumb2 @click="open=false">Odustani</gumb2>
+    </div>
+  </form>
+</div>
+
+  </tekst>
+</template>
