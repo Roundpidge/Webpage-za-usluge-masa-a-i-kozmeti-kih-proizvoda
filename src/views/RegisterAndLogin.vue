@@ -1,11 +1,15 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,  signInWithPopup, signInWithRedirect, getRedirectResult, getAuth, GoogleAuthProvider, deleteUser } from 'firebase/auth'
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, getAuth, GoogleAuthProvider, deleteUser } from 'firebase/auth'
 import { auth,  googleProvider} from '@/firebase.js'
 import { RouterLink, useRouter } from "vue-router";
 import {db} from '@/firebase.js'
 import {doc, setDoc, serverTimestamp } from "firebase/firestore"
+import naslov from '@/components/naslov.vue'
+import gumb2 from '@/components/gumbVanNavbar.vue'
+
 const router = useRouter();
+
 const email = ref('')
 const password = ref('')
 
@@ -82,54 +86,69 @@ onMounted(async () => {
   }
 })
 
-
-//LOGOUT
-const logout = async () => {
-  try {
-    await signOut(auth)
-    router.replace('/logout') 
-  } catch (err) {
-    console.error('Greška pri odjavi:', err)
-  }
-}
-
-
-
-const stilInputa=ref('border-blue-600 border-2 rounded-lg bg-blue-200 mb-3 p-1 flex flex-col items-center');
-const stilForme=ref('inline-block border-blue-600 bg-white border-4 rounded-lg mt-2 p-2');
+const stilInputa = ref('bg-[#affa94] rounded-sm mb-3 p-2 w-full max-w-md');
+const stilForme  = ref('flex flex-col items-start text-[#1b7511] mt-2 p-2');
 </script>
 
 <template>
-  <!-- REGISTRACIJA -->
-    <form :class="[stilForme]"  @submit.prevent="register">
-     <strong>Registracija</strong><br>
-     <hr></hr>
-      <Label>Email:</Label><input :class="[stilInputa]" v-model="email" type="email" placeholder="naziv@gmail.com">
-      <Label>Lozinka: </Label><input :class="[stilInputa]" v-model="password" type="password" placeholder="Upisite lozinku">
-      <button class="border-orange-400 border-3 rounded-lg bg-orange-200 mb-3 p-2 flex flex-col items-center" type="submit">Registriraj se</button>
-      <span :class="response.error ? 'text-rose-600' : 'text-emerald-600'">{{
-        response.message }}</span>
-    </form>
+  <div class="flex flex-col items-center gap-10">
+    <!-- 2 stupca -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-5xl">
+      <!-- REGISTRACIJA (lijevo) -->
+      <form :class="stilForme" @submit.prevent="register">
+        <naslov>Registracija</naslov>
 
-    <!--  PRIJAVA -->
- <form :class="[stilForme]" @submit.prevent="login" class="m-6">
- <strong>Prijava</strong><br>
- <hr></hr>
- <Label>Email:</Label><input :class="[stilInputa]" v-model="emailPrijava" type="email" placeholder="naziv@gmail.com">
- <Label>Lozinka:</Label><input :class="[stilInputa]" v-model="passwordPrijava" type="password" placeholder="Upisite lozinku">
- <button class="border-orange-400 border-3 rounded-lg bg-orange-200 mb-3 p-2 flex flex-col items-center" type="submit">Prijavi se</button>
- <span :class="response.error ? 'text-rose-600' : 'text-emerald-600'">{{
-response.message }}</span>
- </form>
+        <label class="mt-2">Email:</label>
+        <input :class="stilInputa" v-model="email" type="email" placeholder="naziv@gmail.com" />
 
- <!-- GOOGLE PRIJAVA -->
- <button @click="loginWithGoogle()"class="border-orange-400 border-3 rounded-lg bg-orange-200 mb-3 p-2">Prijavi se s google racunom</button>
- <button @click.prevent="logout" class="border-red-600 border-3 rounded-lg bg-red-400 mb-3 p-2"><gumb>Odjava</gumb></button>
- <h1 class="text-red-600 text-xl"><strong>!</strong> Mogu se prijaviti samo postojeći korisnici, ukoliko nemate prijavljen račun, nastavite do gumba "Registracija" ili se prijavite google računom<strong>!</strong></h1>
+        <label>Lozinka:</label>
+        <input :class="stilInputa" v-model="password" type="password" placeholder="Upisite lozinku" />
 
-<RouterLink to="/admin" class="hover:text-red-600 bg-amber-600">ADMIN login</RouterLink>
+        <gumb2 type="submit" class="mt-4">Registriraj se</gumb2>
 
+        <span class="mt-2" :class="response.error ? 'text-rose-600' : 'text-emerald-600'">
+          {{ response.message }}
+        </span>
+      </form>
+
+      <!-- PRIJAVA (desno) + vertikalna linija -->
+      <form :class="stilForme + ' md:border-l-4 md:border-[#9ee783] md:pl-12'" @submit.prevent="login">
+        <naslov>Prijava</naslov>
+
+        <label class="mt-2">Email:</label>
+        <input :class="stilInputa" v-model="emailPrijava" type="email" placeholder="naziv@gmail.com" />
+
+        <label>Lozinka:</label>
+        <input :class="stilInputa" v-model="passwordPrijava" type="password" placeholder="Upisite lozinku" />
+
+        <gumb2 type="submit" class="mt-4">Prijavi se</gumb2>
+
+        <span class="mt-2" :class="response.error ? 'text-rose-600' : 'text-emerald-600'">
+          {{ response.message }}
+        </span>
+      </form>
+    </div>
+
+
+<div class="flex gap-4 justify-start mt-4">
+  <gumb2 class="w-40 h-12 flex items-center justify-center" @click="loginWithGoogle()">
+    Google prijava
+  </gumb2>
+  <RouterLink to="/admin">
+    <gumb2 class="w-40 h-12 flex items-center justify-center">
+      ADMIN login
+    </gumb2>
+  </RouterLink>
+</div>
+
+
+    <span class="text-[#7a472f] text-xl text-center max-w-4xl">
+      <strong>!</strong> Mogu se prijaviti samo postojeći korisnici; ako nemate račun,
+      registrirajte se ili se prijavite Google računom<strong>!</strong>
+    </span>
+  </div>
 </template>
+
 
 <style scoped>
 </style>
