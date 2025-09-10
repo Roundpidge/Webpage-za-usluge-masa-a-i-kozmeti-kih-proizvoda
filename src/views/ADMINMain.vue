@@ -1,15 +1,16 @@
 
 
 <script setup>
-  
 import {ref, computed} from 'vue'
 import { useRouter, useRoute } from "vue-router";
 import { useProductsStore, useKosaricaStore, useTretmaniStore, useUserStore  } from "@/stores/projektStore.js"
 import {signOut,  updatePassword, deleteUser, onAuthStateChanged} from 'firebase/auth'
 import { auth } from '@/firebase.js'
-
-
 import Swal from 'sweetalert2';
+import placeholder from '@/assets/placeholder.jpeg' 
+import naslov from '@/components/naslov.vue'
+import tekst from '@/components/tekst.vue'
+import gumb2 from '@/components/gumbVanNavbar.vue'
 
 const router=useRouter();
 const route=useRoute();
@@ -26,12 +27,14 @@ const novoNaziv=ref('');
 const novoKolicina=ref(0);
 const novoCijena=ref(0);
 const novoId=ref(1);
+const novi_photoDataUrl=ref(null);
 
 //VARIJABLE ZA IZMJENU PODATAKA O PROIZVODU
 const izmjenaNaziv=ref('');
 const izmjenaKolicina=ref(0);
 const izmjenaCijena=ref(0);
 const izmjenaId=ref(null);
+const izmjena_photoDataUrl=ref(null);
 
 const edit=ref(false);
 
@@ -45,6 +48,7 @@ izmjenaId.value=proizvod.id
 izmjenaNaziv.value=proizvod.naziv
 izmjenaKolicina.value=proizvod.kolicina
 izmjenaCijena.value=proizvod.cijena
+izmjena_photoDataUrl.value=proizvod.slika
 return edit.value=true;
 }
 
@@ -52,17 +56,39 @@ return edit.value=true;
 function saveEditing(){
   if(izmjenaId.value===(null))return
 
+const trenutni = store.getById(izmjenaId.value)?.slika ?? placeholder
+
   const noviProizvod = {
     id: Number(izmjenaId.value),
     naziv: izmjenaNaziv.value, 
     kolicina: Number(izmjenaKolicina.value), 
-    cijena: Number(izmjenaCijena.value)
+    cijena: Number(izmjenaCijena.value),
+    slika: izmjena_photoDataUrl.value ?? trenutni
   }
 
   store.IzmjeniPodatkeProizvoda(izmjenaId.value, noviProizvod)
   izmjenaId.value=null
+  izmjena_photoDataUrl.value=null
   edit.value=false
   Swal.fire(`Promjene su spremljene za ${izmjenaNaziv.value}!`);
+}
+
+//TOKOM IZMJENE SLIKA
+function onEditFile(e) {
+  const file = e.target.files?.[0]
+  if (!file || !file.type.startsWith('image/')) return
+  const fr = new FileReader()
+  fr.onload = () => { izmjena_photoDataUrl.value = String(fr.result) }
+  fr.readAsDataURL(file)
+}
+
+//DODAVANJE SLIKE
+function onNewFile(e) {
+  const file = e.target.files?.[0]
+  if (!file || !file.type.startsWith('image/')) return
+  const fr = new FileReader()
+  fr.onload = () => { novi_photoDataUrl.value = String(fr.result) }
+  fr.readAsDataURL(file)
 }
 
 //BRISANJE-PROIZVODI
@@ -82,7 +108,6 @@ await Swal.fire({
     title: "Obrisano!", 
     text: "Proizvod je uspjesno izbrisan", 
     icon: "success" }) 
-    window.location.reload() 
     }catch(error){ 
     await Swal.fire('Greška', 'Brisanje nije uspjelo.', 'error') 
   } 
@@ -114,11 +139,12 @@ const dodajProizvod= async()=>{
 })
   if (isConfirmed) {
     try{
-  await store.dodajNoviProizvod(novoNaziv.value, novoKolicina.value, novoCijena.value)
+  await store.dodajNoviProizvod(novoNaziv.value, novoKolicina.value, novoCijena.value,  novi_photoDataUrl.value)
     await Swal.fire("Saved!", "", "success");
       novoNaziv.value = ''
       novoKolicina.value = 0
       novoCijena.value = 0
+      novi_photoDataUrl.value = null
        } catch (e) {
       await Swal.fire('Greška', 'Spremanje nije uspjelo.', 'error')
     }
@@ -134,20 +160,23 @@ const novoNazivT=ref('');
 const novoTrajanjeT=ref(0);
 const novoCijenaT=ref(0);
 const novoIdT=ref(1);
+const novi_photoDataUrl_T=ref(null);
 
 //VARIJABLE ZA IZMJENU PODATAKA O TRETMANU
 const izmjenaNazivT=ref('');
 const izmjenaTrajanjeT=ref(0);
 const izmjenaCijenaT=ref(0);
 const izmjenaIdT=ref(null);
+const izmjena_photoDataUrl_T=ref(null);
 
 //POSTAVLJANJE ZA IZMJENU-TRETMANI
 function postaviNaEditingT(tretman){
-izmjenaIdT.value=tretman.id
-izmjenaNazivT.value=tretman.naziv
-izmjenaTrajanjeT.value=tretman.trajanje
-izmjenaCijenaT.value=tretman.cijena
-return edit.value=true;
+  izmjenaIdT.value=tretman.id
+  izmjenaNazivT.value=tretman.naziv
+  izmjenaTrajanjeT.value=tretman.trajanje_min  
+  izmjenaCijenaT.value=tretman.cijena
+  izmjena_photoDataUrl_T.value=tretman.slika ?? null
+  return edit.value = true
 }
 
 //IZMJENA-TRETMAN
@@ -158,14 +187,35 @@ function saveEditingT(){
     id: Number(izmjenaIdT.value),
     naziv: izmjenaNazivT.value, 
     trajanje: Number(izmjenaTrajanjeT.value), 
-    cijena: Number(izmjenaCijenaT.value)
+    cijena: Number(izmjenaCijenaT.value),
+    slika: izmjena_photoDataUrl_T.value ?? placeholder
   }
 
   storeT.IzmjeniPodatkeTretmana(izmjenaIdT.value, noviTretman)
   izmjenaIdT.value=null
+  izmjena_photoDataUrl_T.value=null
   edit.value=false
   Swal.fire(`Promjene su spremljene za ${izmjenaNazivT.value}!`);
 }
+
+//TOKOM IZMJENE SLIKA
+function onEditFile_T(e) {
+  const file = e.target.files?.[0]
+  if (!file || !file.type.startsWith('image/') ) return
+  const fr = new FileReader()
+  fr.onload = () => { izmjena_photoDataUrl_T.value = String(fr.result) }
+  fr.readAsDataURL(file)
+}
+
+//DODAVANJE SLIKE
+function onNewFile_T(e) {
+  const file = e.target.files?.[0]
+  if (!file || !file.type.startsWith('image/')) return
+  const fr = new FileReader()
+  fr.onload = () => { novi_photoDataUrl_T.value = String(fr.result) }
+  fr.readAsDataURL(file)
+}
+
 
 //BRISANJE-TRETMANI
 const obrisiTretman = async(id, naziv)=> 
@@ -214,11 +264,12 @@ const dodajTretman= async()=>{
 })
   if (isConfirmed) {
     try{
-  await storeT.dodajNoviTretman(novoNazivT.value, novoTrajanjeT.value, novoCijenaT.value)
+  await storeT.dodajNoviTretman(novoNazivT.value, novoTrajanjeT.value, novoCijenaT.value, novi_photoDataUrl_T.value)
     await Swal.fire("Saved!", "", "success");
-      novoNaziv.value = ''
-      novoKolicina.value = 0
-      novoCijena.value = 0
+      novoNazivT.value = ''
+      novoTrajanjeT.value = 0
+      novoCijenaT.value = 0
+      novi_photoDataUrl_T.value = null
        } catch (e) {
       await Swal.fire('Greška', 'Spremanje nije uspjelo.', 'error')
     }
@@ -233,10 +284,6 @@ const dodajTretman= async()=>{
 const promijeniLozinku = async () => {
  await updatePassword(auth.currentUser, novaLozinka.value);
  open.value=false
-};
-
-const sendVerification = async () => {
- await sendEmailVerification(auth.currentUser);
 };
 
 function otvoriObrazacZaPromjenu(){
@@ -312,82 +359,173 @@ const logout = async () => {
   }
 }
 
+const stilInputa = ref('bg-[#affa94] text-[#1b7511] rounded-sm mb-3 p-2 max-w-md');
+const stilForme  = ref('flex flex-col items-start text-[#1b7511] mt-2 p-2');
 </script>
 <template>
-   <span>Dobrodosli admin! </span>  
+   <naslov>Dobrodosli admin! </naslov> 
+   <tekst>
    <label>Što želite dalje? </label>
    <select name="odabiri" v-model="odabir">
     <option value="proizvod">Pregled proizvoda</option>
     <option value="tretman">Pregled tretmana</option>
     <option value="">Osnovne informacije</option>
    </select>
+   </tekst> 
 
    <!--KORISNIK INFO-->
-   <div v-if="!isProizvod && !isTretman">
-   <h1>Email: {{ route.params.email }}</h1>
-   <ol class="border-4">Košarica:<li v-for=" kosara in cart.kosarica">{{ kosara.naziv }} | {{ kosara.kolicina }} | {{ kosara.ukupnaCijena }} €</li></ol> <button @click="cart.isprazniKosaricu()"class="bg-red-600">Isprazni košaricu</button>
-    <button @click="otvoriObrazacZaPromjenu">Promjena lozinke</button>
-    <div v-if="open">
- <form @submit.prevent="promijeniLozinku">
- Nova lozinka:<input v-model="novaLozinka" type="password" placeholder="Nova lozinka">
- <button type="submit">Promijeni lozinku</button>
- </form>
+<div v-if="!isProizvod && !isTretman"> 
+  <tekst>
+    Email: {{ route.params.email }}
+
+    <!-- CENTRIRANA KOŠARICA -->
+    <div class="flex justify-center mt-6">
+      <ol class="border-4 border-[#affa94] rounded-xl p-4 text-center w-fit">
+        <h2 class="text-xl font-semibold mb-2">Košarica:</h2>
+        <li v-for="kosara in cart.kosarica" :key="kosara.naziv">
+          {{ kosara.naziv }} <span class="ml-3"></span> x{{ kosara.kolicina }} <span class="ml-3"></span>  {{ kosara.ukupnaCijena }} €
+        </li>
+      </ol>
     </div>
-    <button @click.prevent="logout">Odjavi se</button>
-    <button @click.prevent="obrisiKorisnika">Obriši korisnički račun</button>
+    <div class="flex justify-center gap-4 mt-6">
+      <gumb2 @click="cart.isprazniKosaricu()">Isprazni košaricu</gumb2>
+      <gumb2 @click="otvoriObrazacZaPromjenu">Promjena lozinke</gumb2>
+      <gumb2 @click.prevent="logout">Odjavi se od računa</gumb2>
+      <gumb2 @click.prevent="obrisiKorisnika">Obriši admin račun</gumb2>
     </div>
 
+    <!-- PROMJENA LOZINKE -->
+    <div v-if="open" class="flex justify-center mt-4">
+      <form :class="stilForme" @submit.prevent="promijeniLozinku">
+        Nova lozinka:
+        <input :class="stilInputa" v-model="novaLozinka" type="password" placeholder="Nova lozinka">
+        <div class="flex gap-4 mt-2"> <gumb2 type="submit">Promijeni lozinku</gumb2> <gumb2 @click="open=false">Odustani</gumb2></div>
+      </form>
+    </div>
+  </tekst>
+</div>
+
+    
+
    <!--PROIZVODI-->
- <div class="border-r border-blue-400" v-if="isProizvod && !isTretman">
+ <div  v-if="isProizvod && !isTretman">
+  <tekst>
     <ol class=" w-fit flex justify-center m-2 rounded ">
       <li v-for="proizvod in store.proizvodi" :key="proizvod?.id">
-      <RouterLink :to="`/proizvodDetaljno/${proizvod.id}`"class="hover:text-orange-400">{{ proizvod.naziv }} | {{ proizvod.cijena }} €</RouterLink>
-      <button @click="postaviNaEditing(proizvod)">Izmjeni podatke o proizvodu</button>
-      <button @click="obrisiProizvod(proizvod.id, proizvod.naziv)"class="m-2">Izbriši proizvod</button>
+         <img :src="proizvod.slika || placeholder" alt="slika" class="max-h-20 inline-block ml-2" />
+      <li class="m-3">{{ proizvod.naziv }}</li><br></br>
+      <li class="text-gray-700">{{ proizvod.cijena }} €</li>
+      <br></br>
+      <button @click="postaviNaEditing(proizvod)"class="bg-[#81E15E] hover:text-[#24b550] w-20 h-10 text-sm text-[#1b7511] rounded-3xl">Izmjeni podatke </button>
+      <button @click="obrisiProizvod(proizvod.id, proizvod.naziv)"class="bg-[#81E15E] hover:text-[#b52424] w-15 h-10 text-sm text-[#1b7511] rounded-3xl">Izbriši proizvod</button>
       <br>
     </li>
     </ol>
+    </tekst>
 
     <div v-if="edit">
-    <form @submit.prevent="saveEditing()"class="border-4 p-2">
-        <input type="text" placeholder="naziv proizvoda..."v-model="izmjenaNaziv"></input>
-        <input type="number" placeholder="Kolicina..."v-model.number="izmjenaKolicina"></input>
-        <input type="number" placeholder="Cijena..." v-model.number="izmjenaCijena"></input>
-        <button type="submit">Spremi</button>  <button @click="edit=false">Odustani</button>
+      <!--IZMJENA-->
+    <form @submit.prevent="saveEditing()"class="p-2">
+      <label>Naziv:</label><label class="ml-40"> Količina:</label><label class="ml-39">Cijena u eurima: </label><br></br> 
+        <input :class="stilInputa" class="mr-3" type="text" placeholder="naziv proizvoda..."v-model="izmjenaNaziv"></input>
+        <input :class="stilInputa" class="mr-3" type="number" placeholder="Kolicina..."v-model.number="izmjenaKolicina"></input>
+        <input :class="stilInputa" type="number" placeholder="Cijena..." v-model.number="izmjenaCijena"></input>
+        <input id="editProdFile" class="hidden" type="file" accept="image/*" @change="onEditFile" />
+<label for="editProdFile" class="inline-block">
+  <gumb2 class="mb-2">Promijeni sliku</gumb2>
+</label>
+<img v-if="izmjena_photoDataUrl" :src="izmjena_photoDataUrl" class="h-16 rounded inline-block ml-2" alt="pregled nove slike proizvoda" />
+        <gumb2 type="submit">Spremi</gumb2>  <gumb2 @click="edit=false">Odustani</gumb2>
     </form>
     </div>
-       <form @submit.prevent="dodajProizvod">
-        <Label>Naziv: Kolicina:  Cijena: </Label> 
-        <input type="text" v-model="novoNaziv">
-        <input type="number" v-model.number="novoKolicina"> 
-        <input type="number" set="0.01" min="0" v-model.number="novoCijena">
-        <button type="submit">Dodaj proizvod</button>
-      </form>
+       <!-- DODAVANJE PROIZVODA -->
+<form @submit.prevent="dodajProizvod" class="mt-10">
+  <div class="flex flex-wrap items-end gap-3">
+    <div class="flex flex-col">
+      <label class="mb-1">Naziv</label>
+      <input :class="stilInputa" type="text" v-model="novoNaziv" />
+    </div>
+    <div class="flex flex-col">
+      <label class="mb-1">Količina</label>
+      <input :class="stilInputa" type="number" v-model.number="novoKolicina" />
+    </div>
+    <div class="flex flex-col">
+      <label class="mb-1">Cijena (EUR)</label>
+      <input :class="stilInputa" type="number" step="0.01" min="0" v-model.number="novoCijena" />
+    </div>
+    <div class="flex flex-col">
+      <label class="mb-1">Slika</label>
+      <input :class="stilInputa" type="file" accept="image/*" @change="onNewFile" />
+    </div>
+    <gumb2 type="submit" class="mb-1">Dodaj proizvod</gumb2>
+    <img v-if="novi_photoDataUrl" :src="novi_photoDataUrl" class="h-16 rounded inline-block"  alt="preview proizvoda"/>
+  </div>
+</form>
 </div>
 
-<!--TRETMANI-->
-  <div v-if="!isProizvod && isTretman">
-    <ol class=" w-fit flex justify-center m-2 rounded">
-      <li v-for="tretman in storeT.tretmani" :key="tretman?.id">
-      <RouterLink :to="`/tretmanDetaljno/${tretman.id}`"class="hover:text-orange-400">{{ tretman.naziv }} | {{ tretman.cijena }} €</RouterLink>
-      <button @click="postaviNaEditingT(tretman)">Izmjeni podatke o tretmanu</button>
-      <button @click="obrisiTretman(tretman.id, tretman.naziv)"class="m-2">Izbriši tretman</button>
-    </li>
+<!-- TRETMANI -->
+<div v-if="!isProizvod && isTretman">
+  <tekst>
+    <ol class="w-fit flex justify-center m-2 rounded">
+      <li v-for="tretman in storeT.tretmani" :key="tretman?.id" class="text-center mx-6">
+        <img :src="tretman.slika || placeholder" alt="slika tretmana" class="max-h-20 inline-block ml-2"/>
+
+        <li class="m-3">{{ tretman.naziv }}</li>
+        <li class="text-gray-700">{{ tretman.cijena }} €</li>
+        <br/>
+
+        <button @click="postaviNaEditingT(tretman)" class="bg-[#81E15E] hover:text-[#24b550] w-20 h-10 text-sm text-[#1b7511] rounded-3xl">
+        Izmjeni podatke
+        </button>
+
+        <button @click="obrisiTretman(tretman.id, tretman.naziv)"class="bg-[#81E15E] hover:text-[#b52424] w-15 h-10 text-sm text-[#1b7511] rounded-3xl">
+          Izbriši tretman
+        </button>
+        <br/>
+      </li>
     </ol>
-     <div v-if="edit">
-    <form @submit.prevent="saveEditingT()"class="border-4 p-2">
-        <input type="text" placeholder="naziv tretmana..."v-model="izmjenaNazivT"></input>
-        <input type="number" placeholder="Trajanje u minutama..."v-model.number="izmjenaTrajanjeT"></input>
-        <input type="number" placeholder="Cijena..." v-model.number="izmjenaCijenaT"></input>
-        <button type="submit">Spremi</button>  <button @click="edit=false">Odustani</button>
+  </tekst>
+
+  <!-- IZMJENA TRETMANA -->
+  <div v-if="edit">
+    <form @submit.prevent="saveEditingT()" class="p-2">
+      <label>Naziv:</label>
+      <label class="ml-40">Trajanje (min):</label>
+      <label class="ml-36">Cijena u eurima:</label>
+      <br />
+      <input :class="stilInputa" class="mr-3" type="text" placeholder="naziv tretmana..." v-model="izmjenaNazivT"/>
+      <input :class="stilInputa"  class="mr-3" type="number" placeholder="Trajanje u minutama..." v-model.number="izmjenaTrajanjeT" />
+      <input :class="stilInputa" type="number" placeholder="Cijena..." v-model.number="izmjenaCijenaT"/>
+      <input :class="stilInputa" type="file" accept="image/*" @change="onEditFile_T" />
+      <img v-if="izmjena_photoDataUrl_T" :src="izmjena_photoDataUrl_T" class="h-16 inline-block ml-2"/>
+      <gumb2 type="submit">Spremi</gumb2>
+      <gumb2 @click="edit=false">Odustani</gumb2>
     </form>
-    </div>
-       <form @submit.prevent="dodajTretman">
-        <Label>Naziv: Trajanje:  Cijena: </Label> 
-        <input type="text" v-model="novoNazivT">
-        <input type="number" v-model.number="novoTrajanjeT"> 
-        <input type="number" set="0.01" min="0" v-model.number="novoCijenaT">
-        <button type="submit">Dodaj proizvod</button>
-      </form>
   </div>
+
+
+ <!-- DODAVANJE TRETMANA -->
+<form @submit.prevent="dodajTretman" class="mt-10">
+  <div class="flex flex-wrap items-end gap-3">
+    <div class="flex flex-col">
+      <label class="mb-1">Naziv</label>
+      <input :class="stilInputa" type="text" v-model="novoNazivT" />
+    </div>
+    <div class="flex flex-col">
+      <label class="mb-1">Trajanje (min)</label>
+      <input :class="stilInputa" type="number" min="1" v-model.number="novoTrajanjeT" />
+    </div>
+    <div class="flex flex-col">
+      <label class="mb-1">Cijena (EUR)</label>
+      <input :class="stilInputa" type="number" step="0.01" min="0" v-model.number="novoCijenaT" />
+    </div>
+    <div class="flex flex-col">
+      <label class="mb-1">Slika</label>
+      <input :class="stilInputa" type="file" accept="image/*" @change="onNewFile_T" />
+    </div>
+    <gumb2 type="submit" class="mb-1">Dodaj tretman</gumb2>
+    <img v-if="novi_photoDataUrl_T" :src="novi_photoDataUrl_T" class="h-16 rounded inline-block"alt="preview tretmana"/>
+  </div>
+</form>
+</div>
 </template>
