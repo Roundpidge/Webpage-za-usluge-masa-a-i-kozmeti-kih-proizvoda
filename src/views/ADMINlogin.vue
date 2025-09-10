@@ -4,6 +4,8 @@ import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { auth} from '@/firebase.js'
 import { useRouter} from "vue-router";
 import { useUserStore } from '@/stores/projektStore.js';
+import naslov from '@/components/naslov.vue'
+import gumb2 from '@/components/gumbVanNavbar.vue'
 
 const email=ref('');
 const password=ref('');
@@ -32,23 +34,26 @@ return
  }
 };
 
-const stilInputa=ref('border-blue-600 border-2 rounded-lg bg-blue-200 mb-3 p-1 flex flex-col items-center');
-const stilForme=ref('inline-block border-blue-600 bg-white border-4 rounded-lg mt-2 p-2');
+const stilInputa = ref('bg-[#affa94] rounded-sm mb-3 p-2 w-full max-w-md text-center');
+const stilForme  = ref('flex flex-col items-center text-[#1b7511] mt-2 p-2');
 </script>
 <template>
+  <!--ADMIN PRIJAVA-->
+  <form :class="[stilForme]" @submit.prevent="ADMINlogin">
+    <naslov>Admin prijava</naslov>
 
-     <!--ADMIN PRIJAVA-->
- <form :class="[stilForme]" @submit.prevent="ADMINlogin" >
-  <h1><strong>Admin prijava</strong></h1>
- <hr></hr>
- <Label>Email:</Label><input :class="[stilInputa]" v-model="email" type="email" placeholder="naziv@gmail.com">
- <Label>Lozinka:</Label><input :class="[stilInputa]" v-model="password" type="password" placeholder="Upisite lozinku">
+    <label class="self-center mt-2">Email:</label>
+    <input :class="[stilInputa]" v-model="email" type="email" placeholder="naziv@gmail.com" />
 
- <button class="border-orange-400 border-3 rounded-lg bg-orange-200 mb-3 p-2 flex flex-col items-center" type="submit">Prijavi se</button>
- <span :class="response.error ? 'text-rose-600' : 'text-emerald-600'">{{
-response.message }}</span>
- </form>
- 
+    <label class="self-center">Lozinka:</label>
+    <input :class="[stilInputa]" v-model="password" type="password" placeholder="Upisite lozinku" />
+
+    <gumb2 class="mb-3 p-2" type="submit">Prijavi se</gumb2>
+
+    <span :class="response.error ? 'text-rose-600' : 'text-emerald-600'">
+      {{ response.message }}
+    </span>
+  </form>
 </template>
 
 <style scoped>
