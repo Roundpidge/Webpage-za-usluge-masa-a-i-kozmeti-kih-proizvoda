@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, getAuth, GoogleAuthProvider, deleteUser } from 'firebase/auth'
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, getAuth, deleteUser } from 'firebase/auth'
 import { auth,  googleProvider} from '@/firebase.js'
 import { RouterLink, useRouter } from "vue-router";
 import {db} from '@/firebase.js'
@@ -92,7 +92,6 @@ const stilForme  = ref('flex flex-col items-start text-[#1b7511] mt-2 p-2');
 
 <template>
   <div class="flex flex-col items-center gap-10">
-    <!-- 2 stupca -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-5xl">
       <!-- REGISTRACIJA  -->
       <form :class="stilForme" @submit.prevent="register">
@@ -140,8 +139,6 @@ const stilForme  = ref('flex flex-col items-start text-[#1b7511] mt-2 p-2');
     </gumb2>
   </RouterLink>
 </div>
-
-
     <span class="text-[#7a472f] text-xl text-center max-w-4xl">
       <strong>!</strong> Mogu se prijaviti samo postojeći korisnici; ako nemate račun,
       registrirajte se ili se prijavite Google računom<strong>!</strong>
