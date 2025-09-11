@@ -41,7 +41,7 @@ return
  } catch (error) {
  response.value.error = true;
  response.value.message = 'Greška pri registraciji: ' + error.message;
-deleteUser(auth.currentUser); //brisanje korisnika iz firebase authentification u slučaju greške.
+deleteUser(auth.currentUser); 
  }
 };
 
@@ -94,7 +94,7 @@ const stilForme  = ref('flex flex-col items-start text-[#1b7511] mt-2 p-2');
   <div class="flex flex-col items-center gap-10">
     <!-- 2 stupca -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-5xl">
-      <!-- REGISTRACIJA (lijevo) -->
+      <!-- REGISTRACIJA  -->
       <form :class="stilForme" @submit.prevent="register">
         <naslov>Registracija</naslov>
 
@@ -111,7 +111,7 @@ const stilForme  = ref('flex flex-col items-start text-[#1b7511] mt-2 p-2');
         </span>
       </form>
 
-      <!-- PRIJAVA (desno) + vertikalna linija -->
+      <!-- PRIJAVA  -->
       <form :class="stilForme + ' md:border-l-4 md:border-[#9ee783] md:pl-12'" @submit.prevent="login">
         <naslov>Prijava</naslov>
 
