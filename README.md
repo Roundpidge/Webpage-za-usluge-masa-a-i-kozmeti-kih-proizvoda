@@ -45,3 +45,8 @@ funkcionalnosti:
 
 - Link na javni prototip: nema, U dokumentaciji ima u obliku screenshotova sa objašnjenjima
 - Zaduženja po članu tima: sve radi jedna osoba
+
+- YT video: https://youtu.be/aOB662vTvo0
+- App: https://webpage-za-usluge-masa-a-i-kozmeti-five.vercel.app/
+- Podaci za testiranje admin funkcionalnosti: markomarulic15@gmail.com lozinka: markomarko12
+- NAPOMENA: podaci za testiranjensu su izmišljeni!
