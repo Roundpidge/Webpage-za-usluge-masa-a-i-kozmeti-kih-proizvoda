@@ -115,7 +115,7 @@ try {
       <gumb2 @click="cart.isprazniKosaricu()">Isprazni košaricu</gumb2>
       <gumb2 @click="otvoriObrazacZaPromjenu">Promjena lozinke</gumb2>
       <gumb2 @click.prevent="logout">Odjavi se</gumb2>
-      <gumb2 @click.prevent="obrisiKorisnika">Obriši korisnički račun</gumb2>
+      <gumb2 @click.prevent="obrisiKorisnika">Obriši račun</gumb2>
     </div>
 
     <!-- promjena lozinke -->
@@ -136,3 +136,4 @@ try {
 
   </tekst>
 </template>
+
