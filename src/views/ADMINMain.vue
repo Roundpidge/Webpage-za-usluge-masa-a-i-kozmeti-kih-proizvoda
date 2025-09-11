@@ -390,8 +390,8 @@ const stilForme  = ref('flex flex-col items-start text-[#1b7511] mt-2 p-2');
     <div class="flex justify-center gap-4 mt-6">
       <gumb2 @click="cart.isprazniKosaricu()">Isprazni košaricu</gumb2>
       <gumb2 @click="otvoriObrazacZaPromjenu">Promjena lozinke</gumb2>
-      <gumb2 @click.prevent="logout">Odjavi se od računa</gumb2>
-      <gumb2 @click.prevent="obrisiKorisnika">Obriši admin račun</gumb2>
+      <gumb2 @click.prevent="logout">Odjavi se</gumb2>
+      <gumb2 @click.prevent="obrisiKorisnika">Obriši  račun</gumb2>
     </div>
 
     <!-- PROMJENA LOZINKE -->
@@ -529,3 +529,4 @@ const stilForme  = ref('flex flex-col items-start text-[#1b7511] mt-2 p-2');
 </form>
 </div>
 </template>
+
