@@ -26,7 +26,6 @@ onAuthStateChanged(auth, async (currentUser) => {
   }
 })
 
-const verified = computed(() => user.value?.emailVerified === true)
 </script>
 <template>    
 <div class="bg-gradient-to-r from-orange-100 via-white to-orange-100 min-h-screen flex flex-col">
@@ -47,8 +46,8 @@ const verified = computed(() => user.value?.emailVerified === true)
     <RouterLink to="/registerLogin"><gumb>Registracija i prijava</gumb></RouterLink>
     <RouterLink v-if="user && !isAdmin" :to="{ name: 'korisnik', params: { email: user.email } }" ><gumb>Korisnički račun</gumb></RouterLink>
     <RouterLink v-if="user && isAdmin" :to="{ name: 'adminPage', params: { email: user.email } }"><gumb>Admin račun</gumb></RouterLink>
-    <img v-if="verified" src="@/assets/leaves.png" class="max-h-15 max-w-15">
-    <img v-else-if="user && !verified" src="@/assets/leaves2.png" class="max-h-15 max-w-15">
+    <img v-if="user" src="@/assets/leaves.png" class="max-h-15 max-w-15">
+    <img v-else src="@/assets/leaves2.png" class="max-h-15 max-w-15">
   </nav>
   <main class="relative flex-grow">
     <RouterView />
