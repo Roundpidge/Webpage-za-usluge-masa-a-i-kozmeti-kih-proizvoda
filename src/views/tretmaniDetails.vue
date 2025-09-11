@@ -29,18 +29,6 @@ onAuthStateChanged(auth, async (currentUser) => {
     isAdmin.value = false
   }
 })
-
-const verified = computed(() => user.value?.emailVerified === true)
-
-onAuthStateChanged(auth, (currentUser) => {
- if (currentUser) {
- user.value = currentUser;
-
- } else {
- user.value = null;
- }
-});
-
 </script>
 
 <template>
@@ -56,8 +44,8 @@ onAuthStateChanged(auth, (currentUser) => {
     </ol>
 </tekst>
 <br></br>
-    <a v-if="user && verified || isAdmin" href="https://docs.google.com/forms/d/e/1FAIpQLSf-PfQg1hO64jKMxPXrskUyo7oXCnRf7qcJtwkA3mNhj7A2Sw/viewform?usp=header" ><gumb2>Naruci se</gumb2></a>
-<div v-else>Verificirani korisnici mogu rezervirati termin, za verifikaciju nastavite do "Korisnički račun", ukoliko niste prijavljeni prvo odite do "Registracija i prijava" i automatski nakon registracije ili prijave će vas prebaciti na korisnički račun</div>
+    <a v-if="user || isAdmin" href="https://docs.google.com/forms/d/e/1FAIpQLSf-PfQg1hO64jKMxPXrskUyo7oXCnRf7qcJtwkA3mNhj7A2Sw/viewform?usp=header" ><gumb2>Naruci se</gumb2></a>
+<div v-else class="text-[#7a472f] text-xl">! Prijavljeni korisnici mogu rezervirati termin, za prijavu ili registraciju preusmjerite se na"Registracija i prijava" i automatski nakon registracije ili prijave će vas prebaciti na korisnički račun !</div>
 </div>
   </div>
   <div v-else>
