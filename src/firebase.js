@@ -1,6 +1,6 @@
 // Učitavanje potrebnih funkcija
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 // Firebase konfiguracija
 
@@ -17,5 +17,12 @@ const app = initializeApp(firebaseConfig);
 // Inicijalizacija servisa
 const auth = getAuth(app); // auth instanca
 const db = getFirestore(app); // database instanca
-// Izvoz servisa
+export const googleProvider = new GoogleAuthProvider()
 export { auth, db };
+
+
+
+
+
+
+
