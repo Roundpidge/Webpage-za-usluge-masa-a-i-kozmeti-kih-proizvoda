@@ -25,14 +25,11 @@ npm run dev
 ```sh
 npm run build
 ```
-Početni README mora sadržavati:
-
 - Webapp za usluge masaža i kozmetičkih proizvoda
--Broj članova:1-Sanja Žitnik
+- Broj članova:1-Sanja Žitnik
 
 - Fakultet informatike u Puli: https://fipu.unipu.hr/
 - Kolegij: Programsko inženjerstvo: ntankovic.unipu.hr/pi
-
 - Mentor: doc. dr. sc. Nikola Tanković: ntankovic.unipu.hr
 
 funkcionalnosti:
@@ -46,5 +43,5 @@ funkcionalnosti:
 
 -salon također nudi funkcionalnosti administratorima u admin sučelju: pregled svih proizvoda i tretmana, izmjena podataka, brisanje i dodavanje, te iste korisničke funkcionalnosti vezane za korisnički račun. 
 
-- Link na javni prototip: nema, U dokumentaciji ima  u obliku screenshotova sa objašnjenjima
+- Link na javni prototip: nema, U dokumentaciji ima u obliku screenshotova sa objašnjenjima
 - Zaduženja po članu tima: sve radi jedna osoba
