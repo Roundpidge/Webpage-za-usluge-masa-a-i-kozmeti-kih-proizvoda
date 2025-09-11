@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { sendEmailVerification, updatePassword, deleteUser, signOut } from 'firebase/auth'
+import { updatePassword, deleteUser, signOut } from 'firebase/auth'
 import { useProductsStore, useKosaricaStore, useUserStore } from '@/stores/projektStore.js'
 import { auth } from '@/firebase.js'
 import Swal from 'sweetalert2'
@@ -23,23 +23,9 @@ const store = useProductsStore()
 const cart = useKosaricaStore()
 const userStore = useUserStore()
 
-const profilnaSlika = ref(placeholder)
-
-function promijeniSliku(e) {
-  const file = e.target.files?.[0]
-  if (!file || !file.type.startsWith('image/')) return
-  const fr = new FileReader()
-  fr.onload = () => { profilnaSlika.value = String(fr.result) }
-  fr.readAsDataURL(file)
-}
-
 const promijeniLozinku = async () => {
   await updatePassword(auth.currentUser, novaLozinka.value)
   open.value = false
-}
-
-const sendVerification = async () => {
-  await sendEmailVerification(auth.currentUser)
 }
 
 function otvoriObrazacZaPromjenu() {
@@ -104,7 +90,6 @@ try {
 }
 
 }
-
 </script>
 
 <template>
@@ -112,7 +97,6 @@ try {
   <tekst>
     <p>Email: {{ route.params.email }}</p>
 
-    <!-- profilna slika -->
 <div class="flex flex-col items-center mt-4">
   <img :src="placeholder" alt="Profilna slika" class="h-28 w-28 rounded-full border-4 border-[#affa94] mb-3" />
 </div>
@@ -129,7 +113,6 @@ try {
 
     <div class="flex justify-center gap-4 mt-6">
       <gumb2 @click="cart.isprazniKosaricu()">Isprazni košaricu</gumb2>
-      <gumb2 @click.prevent="sendVerification">Pošalji email potvrdu</gumb2>
       <gumb2 @click="otvoriObrazacZaPromjenu">Promjena lozinke</gumb2>
       <gumb2 @click.prevent="logout">Odjavi se</gumb2>
       <gumb2 @click.prevent="obrisiKorisnika">Obriši korisnički račun</gumb2>
