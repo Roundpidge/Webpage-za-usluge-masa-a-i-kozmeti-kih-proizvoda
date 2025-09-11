@@ -22,6 +22,18 @@ const isTretman  = computed(() => odabir.value === 'tretman')
 const userStore=useUserStore();
 const cart=useKosaricaStore();
 
+//VARIJABLE ZA SLIKE(PROIZVODI)
+const prodEditInput = ref(null)
+const prodNewInput  = ref(null)
+const tretEditInput = ref(null)
+const tretNewInput  = ref(null)
+
+const openProdEditFile = () => prodEditInput.value?.click()
+const openProdNewFile  = () => prodNewInput.value?.click()
+const openTretEditFile = () => tretEditInput.value?.click()
+const openTretNewFile  = () => tretNewInput.value?.click()
+
+
 //VARIJABLE ZA DODAVANJE NOVOG PROIZVODA
 const novoNaziv=ref('');
 const novoKolicina=ref(0);
@@ -391,7 +403,7 @@ const stilForme  = ref('flex flex-col items-start text-[#1b7511] mt-2 p-2');
       <gumb2 @click="cart.isprazniKosaricu()">Isprazni košaricu</gumb2>
       <gumb2 @click="otvoriObrazacZaPromjenu">Promjena lozinke</gumb2>
       <gumb2 @click.prevent="logout">Odjavi se</gumb2>
-      <gumb2 @click.prevent="obrisiKorisnika">Obriši  račun</gumb2>
+      <gumb2 @click.prevent="obrisiKorisnika">Obriši račun</gumb2>
     </div>
 
     <!-- PROMJENA LOZINKE -->
@@ -430,11 +442,10 @@ const stilForme  = ref('flex flex-col items-start text-[#1b7511] mt-2 p-2');
         <input :class="stilInputa" class="mr-3" type="text" placeholder="naziv proizvoda..."v-model="izmjenaNaziv"></input>
         <input :class="stilInputa" class="mr-3" type="number" placeholder="Kolicina..."v-model.number="izmjenaKolicina"></input>
         <input :class="stilInputa" type="number" placeholder="Cijena..." v-model.number="izmjenaCijena"></input>
-        <input id="editProdFile" class="hidden" type="file" accept="image/*" @change="onEditFile" />
-<label for="editProdFile" class="inline-block">
-  <gumb2 class="mb-2">Promijeni sliku</gumb2>
-</label>
+<input ref="prodEditInput" class="hidden"  type="file" accept="image/*"@change="onEditFile"/>
+<gumb2 type="button" class="mb-2" @click="openProdEditFile">Promijeni sliku</gumb2>
 <img v-if="izmjena_photoDataUrl" :src="izmjena_photoDataUrl" class="h-16 rounded inline-block ml-2" alt="pregled nove slike proizvoda" />
+
         <gumb2 type="submit">Spremi</gumb2>  <gumb2 @click="edit=false">Odustani</gumb2>
     </form>
     </div>
@@ -455,10 +466,12 @@ const stilForme  = ref('flex flex-col items-start text-[#1b7511] mt-2 p-2');
     </div>
     <div class="flex flex-col">
       <label class="mb-1">Slika</label>
-      <input :class="stilInputa" type="file" accept="image/*" @change="onNewFile" />
-    </div>
-    <gumb2 type="submit" class="mb-1">Dodaj proizvod</gumb2>
-    <img v-if="novi_photoDataUrl" :src="novi_photoDataUrl" class="h-16 rounded inline-block"  alt="preview proizvoda"/>
+     <input ref="prodNewInput" class="hidden" type="file" accept="image/*" @change="onNewFile"/>
+  </div>
+<gumb2 type="button" class="mb-1" @click="openProdNewFile">Odaberi sliku</gumb2>
+<gumb2 type="submit" class="mb-1">Dodaj proizvod</gumb2>
+<img v-if="novi_photoDataUrl" :src="novi_photoDataUrl" class="h-16 rounded inline-block" alt="preview proizvoda"/>
+
   </div>
 </form>
 </div>
@@ -496,8 +509,9 @@ const stilForme  = ref('flex flex-col items-start text-[#1b7511] mt-2 p-2');
       <input :class="stilInputa" class="mr-3" type="text" placeholder="naziv tretmana..." v-model="izmjenaNazivT"/>
       <input :class="stilInputa"  class="mr-3" type="number" placeholder="Trajanje u minutama..." v-model.number="izmjenaTrajanjeT" />
       <input :class="stilInputa" type="number" placeholder="Cijena..." v-model.number="izmjenaCijenaT"/>
-      <input :class="stilInputa" type="file" accept="image/*" @change="onEditFile_T" />
-      <img v-if="izmjena_photoDataUrl_T" :src="izmjena_photoDataUrl_T" class="h-16 inline-block ml-2"/>
+      <input ref="tretEditInput" class="hidden" type="file" accept="image/*" @change="onEditFile_T"/>
+      <gumb2 type="button" class="mb-2" @click="openTretEditFile">Promijeni sliku</gumb2>
+      <img v-if="izmjena_photoDataUrl_T" :src="izmjena_photoDataUrl_T" class="h-16 inline-block ml-2" />
       <gumb2 type="submit">Spremi</gumb2>
       <gumb2 @click="edit=false">Odustani</gumb2>
     </form>
@@ -521,12 +535,14 @@ const stilForme  = ref('flex flex-col items-start text-[#1b7511] mt-2 p-2');
     </div>
     <div class="flex flex-col">
       <label class="mb-1">Slika</label>
-      <input :class="stilInputa" type="file" accept="image/*" @change="onNewFile_T" />
-    </div>
+      <input ref="tretNewInput" class="hidden" type="file" accept="image/*" @change="onNewFile_T"/>
+</div>
+<gumb2 type="button" class="mb-1" @click="openTretNewFile">Odaberi sliku</gumb2>
+<img v-if="novi_photoDataUrl_T" :src="novi_photoDataUrl_T" class="h-16 rounded inline-block" alt="preview tretmana"/>
+
     <gumb2 type="submit" class="mb-1">Dodaj tretman</gumb2>
     <img v-if="novi_photoDataUrl_T" :src="novi_photoDataUrl_T" class="h-16 rounded inline-block"alt="preview tretmana"/>
   </div>
 </form>
 </div>
 </template>
-
